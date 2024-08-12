@@ -11,7 +11,14 @@ module.exports = {
         giloryReg: ['gilory-reg', 'sans-serif'],
         gilorySemiBold: ['gilory-semibold', 'sans-serif'],
         giloryBold: ['gilory-bold', 'sans-serif'],
-      }
+      },
+      colors: {
+        transparent: 'transparent',
+        current: 'currentColor',
+        'baseSaf': '#FFE6A9',
+        'textBoxBG': '#FFFFF4',
+        'buttonBG': '#FF9933',
+      },
     },
   },
   plugins: [],
