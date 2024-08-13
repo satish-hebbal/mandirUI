@@ -30,8 +30,8 @@ const HomeTemp = () => {
 
   return (
     <View className='bg-baseSaf'>
-        <TouchableOpacity onPress={handleSignOut} className='bg-gray-100 p-4 relative mt-14 flex w-24 rounded-lg '>
-            <Text className='text-gray-500 font-giloryBold'>Back log</Text>
+        <TouchableOpacity onPress={handleSignOut} className='bg-gray-100 py-4 px-3 relative mt-14 flex w-28 rounded-lg'>
+            <Text className='text-gray-500 font-giloryBold'>Back log out</Text>
         </TouchableOpacity>
       <View className='bg-baseSaf flex justify-center items-center h-screen  px-20 ' >  
           <View className="">
