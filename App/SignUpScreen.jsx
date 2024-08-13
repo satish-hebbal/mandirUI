@@ -1,4 +1,4 @@
-import {Image, View, Text, SafeAreaView, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native'
+import {Image, View, Text, SafeAreaView, TextInput, ActivityIndicator, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import { tailwind } from 'nativewind';
 import { loadAsync, useFonts, } from 'expo-font'; 
 import {React, useEffect, useState} from 'react'
@@ -7,6 +7,8 @@ import {React, useEffect, useState} from 'react'
 const SignUpScreen = () => {
 
   const [isFocused, setIsFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+  const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false);
 
   const [fontsLoaded] = useFonts({
     'gilory-reg': require('../assets/gilroyFont/Gilroy-Regular.ttf'),
@@ -18,8 +20,17 @@ const SignUpScreen = () => {
     return <ActivityIndicator size="large" />;
   }
 
+  const handleOutsidePress = () => {
+    setIsFocused(false);
+    setPasswordFocused(false);
+    setConfirmPasswordFocused(false);
+    Keyboard.dismiss();  // Close the keyboard
+  };
 
   return (
+    <TouchableWithoutFeedback onPress={handleOutsidePress}>
+
+    
     <SafeAreaView>
       <View className='bg-baseSaf flex flex-row justify-center items-center h-60 pt-10 px-24 ' >  
           <View className="">
@@ -48,15 +59,19 @@ const SignUpScreen = () => {
 
         <View className=''>
           <Text className="font-gilorySemiBold text-gray-700 mb-2" >Password</Text>
-          <TextInput  secureTextEntry={true} className={isFocused?'border border-orange-300 bg-baseSaf rounded-lg p-2' : 'border border-orange-100 bg-textBoxBG rounded-lg p-2'}
-           placeholder='At least 8 characters' placeholderTextColor='rgb(143, 159, 182)'>
+          <TextInput  secureTextEntry={true} className={passwordFocused?'border border-orange-300 bg-baseSaf rounded-lg p-2' : 'border border-orange-100 bg-textBoxBG rounded-lg p-2'}
+           placeholder='At least 8 characters' placeholderTextColor='rgb(143, 159, 182)'
+           onFocus={()=>setPasswordFocused(true)}
+           onBlur={()=>setPasswordFocused(false)}>
            </TextInput>
         </View>
 
         <View className=''>
           <Text className="font-gilorySemiBold text-gray-700 mb-2" >Confirm Password</Text>
-          <TextInput  secureTextEntry={true} className={isFocused?'border border-orange-300 bg-baseSaf rounded-lg p-2' : 'border border-orange-100 bg-textBoxBG rounded-lg p-2'}
-           placeholder='At least 8 characters' placeholderTextColor='rgb(143, 159, 182)'>
+          <TextInput  secureTextEntry={true} className={confirmPasswordFocused?'border border-orange-300 bg-baseSaf rounded-lg p-2' : 'border border-orange-100 bg-textBoxBG rounded-lg p-2'}
+           placeholder='At least 8 characters' placeholderTextColor='rgb(143, 159, 182)'
+           onFocus={()=>setConfirmPasswordFocused(true)}
+           onBlur={()=>setConfirmPasswordFocused(false)}>
            </TextInput>
         </View> 
       </View>
@@ -86,6 +101,7 @@ const SignUpScreen = () => {
       </View>
 
     </SafeAreaView>
+    </TouchableWithoutFeedback>
   )
 }
 

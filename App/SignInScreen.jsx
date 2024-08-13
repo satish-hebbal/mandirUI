@@ -1,4 +1,4 @@
-import {Image, View, Text, SafeAreaView, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native'
+import {Image, View, Text, SafeAreaView, TextInput, ActivityIndicator, TouchableOpacity,  TouchableWithoutFeedback, Keyboard } from 'react-native'
 import { tailwind } from 'nativewind';
 import { loadAsync, useFonts, } from 'expo-font'; 
 import {React, useEffect, useState} from 'react'
@@ -7,6 +7,7 @@ import {React, useEffect, useState} from 'react'
 const SignInScreen = () => {
 
   const [isFocused, setIsFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
 
   const [fontsLoaded] = useFonts({
     'gilory-reg': require('../assets/gilroyFont/Gilroy-Regular.ttf'),
@@ -17,9 +18,15 @@ const SignInScreen = () => {
   if (!fontsLoaded) {
     return <ActivityIndicator size="large" />;
   }
+  const handleOutsidePress = () => {
+    setIsFocused(false);
+    setPasswordFocused(false);
+    Keyboard.dismiss();  // Close the keyboard
+  };
 
 
   return (
+    <TouchableWithoutFeedback onPress={handleOutsidePress}>
     <SafeAreaView>
       <View className='bg-baseSaf flex flex-row justify-center items-center h-60 pt-10 px-24 ' >  
           <View className="">
@@ -48,8 +55,10 @@ const SignInScreen = () => {
 
         <View className=''>
           <Text className="font-gilorySemiBold text-gray-700 mb-2" >Password</Text>
-          <TextInput  secureTextEntry={true} className={isFocused?'border border-orange-300 bg-baseSaf rounded-lg p-2' : 'border border-orange-100 bg-textBoxBG rounded-lg p-2'}
-           placeholder='At least 8 characters' placeholderTextColor='rgb(143, 159, 182)'>
+          <TextInput  secureTextEntry={true} className={passwordFocused?'border border-orange-300 bg-baseSaf rounded-lg p-2' : 'border border-orange-100 bg-textBoxBG rounded-lg p-2'}
+           placeholder='At least 8 characters' placeholderTextColor='rgb(143, 159, 182)'
+           onFocus={()=>setPasswordFocused(true)}
+           onBlur={()=>setPasswordFocused(false)}>
            </TextInput>
         </View>
 
@@ -80,6 +89,7 @@ const SignInScreen = () => {
       </View>
 
     </SafeAreaView>
+    </TouchableWithoutFeedback>
   )
 }
 
