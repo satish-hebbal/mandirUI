@@ -1,13 +1,44 @@
 import {Image, View, Text, SafeAreaView, TextInput, ActivityIndicator, TouchableOpacity,  TouchableWithoutFeedback, Keyboard } from 'react-native'
-import { tailwind } from 'nativewind';
 import { loadAsync, useFonts, } from 'expo-font'; 
-import {React, useEffect, useState} from 'react'
-// import MandirLogo as logo from './assets/MandirLogo.png'
+import {React, useEffect, useState} from 'react';
+import {auth} from '../firebasae'
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useNavigation } from '@react-navigation/core';
 
 const SignInScreen = () => {
 
   const [isFocused, setIsFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
+
+  const[email, setEmail] = useState ('');
+  const[password, setPassword] = useState ('');
+
+  const handleSignIn = () =>{
+    signInWithEmailAndPassword(auth, email, password)
+    .then(userCredentials => {
+      const user = userCredentials.user;
+      console.log("logged in with",user.email);
+    }).catch(error => alert(error.message))
+  } 
+
+  const checkPasswordLength = () => {
+    if(password.length > 7){
+      handleSignIn()
+    }
+    else{
+      alert("Password must be atleast 8 char!")
+    }
+  }
+
+  const navigation = useNavigation();
+  useEffect(()=>{
+    const unsubscribe =  auth.onAuthStateChanged(user=>{
+      if(user){
+        navigation.navigate("Home")
+      }
+    })
+    return unsubscribe;
+  },[])
 
   const [fontsLoaded] = useFonts({
     'gilory-reg': require('../assets/gilroyFont/Gilroy-Regular.ttf'),
@@ -21,7 +52,7 @@ const SignInScreen = () => {
   const handleOutsidePress = () => {
     setIsFocused(false);
     setPasswordFocused(false);
-    Keyboard.dismiss();  // Close the keyboard
+    Keyboard.dismiss();  
   };
 
 
@@ -49,7 +80,9 @@ const SignInScreen = () => {
           <TextInput className={isFocused?'border border-orange-300 bg-baseSaf rounded-lg p-2' : 'border border-orange-100 bg-textBoxBG rounded-lg p-2'}
            placeholder='example@mail.com' placeholderTextColor='rgb(143, 159, 182)'
            onFocus={()=>setIsFocused(true)}
-           onBlur={()=>setIsFocused(false)}>
+           onBlur={()=>setIsFocused(false)}
+           value={email}
+           onChangeText={text => setEmail(text)}>
            </TextInput>
         </View>
 
@@ -58,14 +91,16 @@ const SignInScreen = () => {
           <TextInput  secureTextEntry={true} className={passwordFocused?'border border-orange-300 bg-baseSaf rounded-lg p-2' : 'border border-orange-100 bg-textBoxBG rounded-lg p-2'}
            placeholder='At least 8 characters' placeholderTextColor='rgb(143, 159, 182)'
            onFocus={()=>setPasswordFocused(true)}
-           onBlur={()=>setPasswordFocused(false)}>
+           onBlur={()=>setPasswordFocused(false)}
+           value={password}
+           onChangeText={text => setPassword(text)}>
            </TextInput>
         </View>
 
       </View>
 
       <View className='p-4'>
-      <TouchableOpacity className='bg-buttonBG flex items-center justify-center py-3 px-2 rounded-lg'>
+      <TouchableOpacity onPress={checkPasswordLength} className='bg-buttonBG flex items-center justify-center py-3 px-2 rounded-lg'>
           <Text className='text-white font-gilorySemiBold text-base '>Sign In</Text>
         </TouchableOpacity>
       </View>
@@ -84,7 +119,7 @@ const SignInScreen = () => {
       </View>
 
       <View className='flex items-center'>
-        <Text className='font-gilorySemiBold text-gray-500'>Don't you have an account? <Text onPress={navigator} className='text-blue-500'>Sign Up</Text></Text>
+        <Text className='font-gilorySemiBold text-gray-500'>Don't you have an account? <Text onPress={()=>navigation.navigate("SignUp")} className='text-blue-500'>Sign Up</Text></Text>
       </View>
       </View>
 

@@ -1,14 +1,39 @@
 import {Image, View, Text, SafeAreaView, TextInput, ActivityIndicator, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native'
-import { tailwind } from 'nativewind';
 import { loadAsync, useFonts, } from 'expo-font'; 
 import {React, useEffect, useState} from 'react'
-// import MandirLogo as logo from './assets/MandirLogo.png'
+import {auth} from '../firebasae'
+import {createUserWithEmailAndPassword } from "firebase/auth";
+import { useNavigation } from '@react-navigation/core';
+
 
 const SignUpScreen = () => {
 
   const [isFocused, setIsFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false);
+
+  const[email, setEmail] = useState ('');
+  const[password, setPassword] = useState ('');
+  const[repassword, setRePassword] = useState ('');
+
+  const navigation = useNavigation();
+  useEffect(()=>{
+    const unsubscribe =  auth.onAuthStateChanged(user=>{
+      if(user){
+        navigation.navigate("Home")
+      }
+    })
+    return unsubscribe;
+  },[])
+
+  const handleSignUp = () =>{
+    createUserWithEmailAndPassword(auth, email, password)
+    .then(userCredentials => {
+      const user = userCredentials.user;
+      console.log(user.email);
+    }).catch(error => alert(error.message))
+  }
+
 
   const [fontsLoaded] = useFonts({
     'gilory-reg': require('../assets/gilroyFont/Gilroy-Regular.ttf'),
@@ -26,6 +51,15 @@ const SignUpScreen = () => {
     setConfirmPasswordFocused(false);
     Keyboard.dismiss();  // Close the keyboard
   };
+
+  const confirmPassword = () => {
+    if(password.length > 7 &&password == repassword){
+      handleSignUp()
+    }
+    else{
+      alert("yo, password should match!")
+    }
+  }
 
   return (
     <TouchableWithoutFeedback onPress={handleOutsidePress}>
@@ -53,7 +87,9 @@ const SignUpScreen = () => {
           <TextInput className={isFocused?'border border-orange-300 bg-baseSaf rounded-lg p-2' : 'border border-orange-100 bg-textBoxBG rounded-lg p-2'}
            placeholder='example@mail.com' placeholderTextColor='rgb(143, 159, 182)'
            onFocus={()=>setIsFocused(true)}
-           onBlur={()=>setIsFocused(false)}>
+           onBlur={()=>setIsFocused(false)}
+           value={email}
+           onChangeText={text => setEmail(text)}>
            </TextInput>
         </View>
 
@@ -62,7 +98,9 @@ const SignUpScreen = () => {
           <TextInput  secureTextEntry={true} className={passwordFocused?'border border-orange-300 bg-baseSaf rounded-lg p-2' : 'border border-orange-100 bg-textBoxBG rounded-lg p-2'}
            placeholder='At least 8 characters' placeholderTextColor='rgb(143, 159, 182)'
            onFocus={()=>setPasswordFocused(true)}
-           onBlur={()=>setPasswordFocused(false)}>
+           onBlur={()=>setPasswordFocused(false)}
+           value={password}
+           onChangeText={text => setPassword(text)}>
            </TextInput>
         </View>
 
@@ -71,13 +109,15 @@ const SignUpScreen = () => {
           <TextInput  secureTextEntry={true} className={confirmPasswordFocused?'border border-orange-300 bg-baseSaf rounded-lg p-2' : 'border border-orange-100 bg-textBoxBG rounded-lg p-2'}
            placeholder='At least 8 characters' placeholderTextColor='rgb(143, 159, 182)'
            onFocus={()=>setConfirmPasswordFocused(true)}
-           onBlur={()=>setConfirmPasswordFocused(false)}>
+           onBlur={()=>setConfirmPasswordFocused(false)}
+           value={repassword}
+           onChangeText={text => setRePassword(text)}>
            </TextInput>
         </View> 
       </View>
 
       <View className='p-4'>
-      <TouchableOpacity className='bg-buttonBG flex items-center justify-center py-3 px-2 rounded-lg'>
+      <TouchableOpacity onPress={confirmPassword} className='bg-buttonBG flex items-center justify-center py-3 px-2 rounded-lg'>
           <Text className='text-white font-gilorySemiBold text-base '>Sign Up</Text>
         </TouchableOpacity>
       </View>
@@ -96,7 +136,7 @@ const SignUpScreen = () => {
       </View>
 
       <View className='flex items-center'>
-        <Text className='font-gilorySemiBold text-gray-500'>Already have an account? <Text className='text-blue-500'>Sign In</Text></Text>
+        <Text className='font-gilorySemiBold text-gray-500'>Already have an account? <Text onPress={()=>navigation.navigate("SignIn")} className='text-blue-500'>Sign In</Text></Text>
       </View>
       </View>
 
