@@ -59,7 +59,7 @@ These colors work together to create a visually pleasing and culturally resonant
 
 Here’s a visual representation of the app's design, created in Figma:
 
-![Mockup Design](MockMM.jpg)
+![Mockup Design](MockupMM.jpg)
 
 ## 🛠 Built With
 
